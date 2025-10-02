@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+  <title th:text="${category.isEdit} ? 'Sửa thể loại' : 'Thêm thể loại'">Thể loại</title>
+</head>
+<body>
+<section layout:fragment="content">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-7 col-lg-5">
+        <div class="card shadow-sm">
+          <div class="card-header bg-brand text-white">
+            <strong th:text="${category.id} != null ? 'Cập nhật thể loại' : 'Thêm thể loại'">Thêm thể loại</strong>
+          </div>
+          <div class="card-body">
+            <form th:action="@{/admin/categories/saveOrUpdate}" method="post"
+                  enctype="multipart/form-data" th:object="${category}">
+
+              <!-- id & cờ isEdit -->
+              <input type="hidden" th:field="*{id}">
+              <input type="hidden" th:field="*{isEdit}">
+
+              <!-- giữ đường dẫn hình hiện tại khi chỉnh sửa -->
+              <input type="hidden" th:field="*{images}">
+
+              <!-- GIỮ THAM SỐ để sau khi Lưu/Hủy quay về đúng trang -->
+              <input type="hidden" name="page" th:value="${page}">
+              <input type="hidden" name="size" th:value="${size}">
+              <input type="hidden" name="kw"   th:value="${kw}">
+
+              <div class="mb-3">
+                <label class="form-label" for="categoryName">Tên thể loại</label>
+                <input id="categoryName" type="text" class="form-control"
+                       th:classappend="${#fields.hasErrors('name')} ? ' is-invalid' : ''"
+                       th:field="*{name}" placeholder="Nhập tên thể loại...">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                <div class="form-text text-muted">Ví dụ: Bánh, Kẹo, Sữa tươi, Sữa chua,...</div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" for="categoryImages">Hình ảnh</label>
+                <input id="categoryImages" type="file" class="form-control"
+                       th:field="*{imageFile}"
+                       th:classappend="${#fields.hasErrors('imageFile')} ? ' is-invalid' : ''">
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('imageFile')}" th:errors="*{imageFile}"></div>
+                <div class="form-text text-muted">Chọn hình ảnh từ máy tính của bạn.</div>
+
+                <div class="form-text" th:if="${category.images != null}">
+                  Tệp hiện tại: <span th:text="${category.images}"></span>
+                </div>
+                <div th:if="${category.images != null}">
+                  <img th:src="@{'/uploads/' + ${category.images}}"
+                       alt="Ảnh hiện tại" class="img-thumbnail mt-2" style="max-width: 120px;">
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-end gap-2">
+                <a class="btn btn-outline-secondary"
+                   th:href="@{/admin/categories(page=${page}, size=${size}, kw=${kw})}">Hủy</a>
+                <button type="submit" class="btn btn-brand">Lưu</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+</html>

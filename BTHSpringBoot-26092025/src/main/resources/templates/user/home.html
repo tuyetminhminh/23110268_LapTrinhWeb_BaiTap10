@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><meta charset="UTF-8"><title>User – Trang chủ</title></head>
+<body th:with="pageTitle=${'Trang chủ người dùng'}">
+<section layout:fragment="content">
+  <h2>Chào mừng bạn!</h2>
+  <p>Đây là trang dành cho USER. Bạn có thể xem sản phẩm, lọc theo danh mục,…</p>
+  <a class="btn btn-outline-primary" th:href="@{/graphql-app.html}">Mở trang GraphQL demo</a>
+</section>
+</body>
+</html>

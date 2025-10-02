@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><meta charset="UTF-8"><title>Admin – Trang chủ</title></head>
+<body th:with="pageTitle=${'Trang chủ quản trị'}">
+<section layout:fragment="content">
+  <h2>Khu vực ADMIN</h2>
+  <p>Quản lý danh mục & sản phẩm:</p>
+  <div class="d-flex gap-2">
+    <a class="btn btn-primary" th:href="@{/admin/categories}">Quản lý Category</a>
+    <a class="btn btn-primary" th:href="@{/admin/products}">Quản lý Product</a>
+  </div>
+</section>
+</body>
+</html>

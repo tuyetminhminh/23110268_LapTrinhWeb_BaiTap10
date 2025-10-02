@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+  <meta charset="UTF-8" />
+  <title>Danh mục thể loại</title>
+</head>
+<body>
+<section layout:fragment="content">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 m-0">Thể loại</h1>
+    <!-- Nút Thêm mới -->
+    <a class="btn btn-brand-blue"
+       th:href="@{/admin/categories/add(page=${current}, size=${size}, kw=${kw})}">
+      + Thêm mới
+    </a>
+  </div>
+
+  <!-- Tìm kiếm -->
+  <form class="row g-2 mb-3" th:action="@{/admin/categories}" method="get">
+    <div class="col-auto">
+      <input class="form-control" type="text" name="kw"
+             th:value="${kw}" placeholder="Nhập tên thể loại...">
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-outline-secondary" type="submit">Tìm</button>
+    </div>
+  </form>
+
+  <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-striped align-middle shadow-sm rounded">
+      <thead class="table-light">
+      <tr>
+        <th style="width: 80px">ID</th>
+        <th>Tên thể loại</th>
+        <th style="width: 120px">Hình ảnh</th>
+        <th style="width: 180px" class="text-end">Hành động</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="c : ${categoryPage.content}">
+        <td th:text="${c.id}">1</td>
+        <td th:text="${c.name}">Tên</td>
+        <td>
+          <img th:if="${c.images != null}"
+               th:src="@{'/uploads/' + ${c.images}}"
+               alt="Ảnh" class="img-thumbnail" style="max-width:60px;">
+          <span th:if="${c.images == null}" class="badge bg-secondary">Không có</span>
+        </td>
+        <td class="text-end">
+          <a class="btn btn-sm btn-outline-primary me-1"
+             th:href="@{/admin/categories/edit/{id}(id=${c.id}, page=${current}, size=${size}, kw=${kw})}"
+             title="Sửa"><i class="bi bi-pencil"></i> Sửa</a>
+          <a class="btn btn-sm btn-outline-danger"
+             th:href="@{/admin/categories/delete/{id}(id=${c.id}, page=${current}, size=${size}, kw=${kw})}"
+             title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa?');">
+             <i class="bi bi-trash"></i> Xóa</a>
+        </td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(categoryPage.content)}">
+        <td colspan="4" class="text-center text-muted">Chưa có dữ liệu</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Info + page size -->
+  <div class="d-flex justify-content-between align-items-center">
+    <div class="small text-muted"
+         th:with="start=${categoryPage.number * categoryPage.size + (categoryPage.numberOfElements > 0 ? 1 : 0)},
+                  end=${categoryPage.number * categoryPage.size + categoryPage.numberOfElements},
+                  total=${categoryPage.totalElements}">
+      Hiển thị <b th:text="${start}">0</b>–<b th:text="${end}">0</b> trên <b th:text="${total}">0</b> bản ghi
+    </div>
+
+    <form class="d-inline" th:action="@{/admin/categories}" method="get">
+      <input type="hidden" name="kw" th:value="${kw}">
+      <input type="hidden" name="page" value="1">
+      <label class="me-1">Hiển thị</label>
+      <select class="form-select d-inline-block" style="width:auto" name="size" onchange="this.form.submit()">
+        <option th:each="s : ${new int[]{5,10,15,25,50,100}}"
+                th:value="${s}" th:text="${s}" th:selected="${s} == ${size}"></option>
+      </select>
+      <span class="ms-1">dòng/trang</span>
+    </form>
+  </div>
+
+  <!-- Pagination -->
+  <nav aria-label="Pagination" class="mt-2">
+    <ul class="pagination justify-content-center mb-0">
+      <!-- Prev -->
+      <li class="page-item" th:classappend="${categoryPage.first} ? 'disabled'">
+        <a class="page-link"
+           th:href="@{/admin/categories(page=${categoryPage.number}, size=${categoryPage.size}, kw=${kw})}">«</a>
+      </li>
+
+      <!-- Pages -->
+      <li class="page-item" th:each="p : ${pageNumbers}"
+          th:classappend="${p} == ${categoryPage.number + 1} ? 'active'">
+        <a class="page-link" th:text="${p}"
+           th:href="@{/admin/categories(page=${p}, size=${categoryPage.size}, kw=${kw})}"></a>
+      </li>
+
+      <!-- Next -->
+      <li class="page-item" th:classappend="${categoryPage.last} ? 'disabled'">
+        <a class="page-link"
+           th:href="@{/admin/categories(page=${categoryPage.number + 2}, size=${categoryPage.size}, kw=${kw})}">»</a>
+      </li>
+    </ul>
+  </nav>
+</section>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<nav th:fragment="header"
+     xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+     class="navbar navbar-expand-lg navbar-dark bg-primary text-white shadow-sm">
+  <div class="container">
+    <a class="navbar-brand" th:href="@{/home}">Bài tập thực hành số 10</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnav"
+            aria-controls="topnav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="topnav" class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        <!-- MENU cho USER (và ADMIN cũng xem được nếu muốn) -->
+        <li class="nav-item" sec:authorize="hasAnyRole('USER','ADMIN')">
+          <a class="nav-link" th:href="@{/user/categories}">Categories</a>
+        </li>
+        <li class="nav-item" sec:authorize="hasAnyRole('USER','ADMIN')">
+          <a class="nav-link" th:href="@{/user/products}">Products</a>
+        </li>
+
+        <!-- MENU quản trị CHỈ ADMIN -->
+        <li class="nav-item dropdown" sec:authorize="hasRole('ADMIN')">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Admin</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" th:href="@{/admin/categories}">Quản lý Category</a></li>
+            <li><a class="dropdown-item" th:href="@{/admin/products}">Quản lý Product</a></li>
+            <li><a class="dropdown-item" th:href="@{/admin/users}">Quản lý User</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" th:href="@{/graphql-app.html}">GraphQL App (CRUD)</a></li>
+          </ul>
+        </li>
+
+      </ul>
+
+      <!-- avatar + logout khi đã đăng nhập -->
+      <div class="ms-auto d-flex align-items-center gap-2" sec:authorize="isAuthenticated()">
+        <img th:src="@{/image/minh.jpg}" alt="me" width="36" height="36" class="rounded-circle">
+        <form th:action="@{/logout}" method="post" class="ms-2">
+          <button class="btn btn-sm btn-light" type="submit">Đăng xuất</button>
+        </form>
+      </div>
+
+      <!-- nút đăng nhập/đăng ký khi ANONYMOUS -->
+      <div class="ms-auto d-flex gap-2" sec:authorize="isAnonymous()">
+        <a class="btn btn-sm btn-light" th:href="@{/login}">Đăng nhập</a>
+        <a class="btn btn-sm btn-outline-light" th:href="@{/register}">Đăng ký</a>
+      </div>
+    </div>
+  </div>
+</nav>

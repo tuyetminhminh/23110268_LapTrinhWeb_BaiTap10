@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <!-- tiêu đề động -->
+  <title th:text="${pageTitle} ?: 'Bài tập thực hành số 10'">Bài tập thực hành số 10</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- CSS -->
+  <link th:href="@{/css/app.css}" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+  <style>
+    html, body { height: 100% }
+    body { display: flex; flex-direction: column }
+    main.main-content { flex: 1 0 auto }
+    footer.site-footer { flex-shrink: 0 }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER: ẩn ở trang auth nếu đặt biến authPage=true -->
+  <div th:if="${authPage} != true" th:replace="~{fragments/header :: header}"></div>
+
+  <!-- CONTENT -->
+  <main class="main-content">
+    <div class="container py-3">
+      <section layout:fragment="content"></section>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <div th:replace="~{fragments/footer :: footer}" class="site-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

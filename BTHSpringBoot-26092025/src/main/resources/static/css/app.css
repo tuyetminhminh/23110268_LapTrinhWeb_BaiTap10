@@ -1,0 +1,91 @@
+/* ====== Brand palette ====== */
+:root{
+  --brand: #3A6F43;         /* xanh lá chủ đạo */
+  --brand-blue: #124170;   /* xanh lá nhạt hơn */
+  --brand-pink: #FDAAAA;    /* hồng */
+  --brand-whitepink: #FFD5D5; /* hồng nhạt */
+}
+
+/* ====== Background helpers ====== */
+.bg-brand{ background-color: var(--brand) !important; }
+.bg-brand-blue{ background-color: var(--brand-blue) !important; }
+.bg-brand-pink{ background-color: var(--brand-pink) !important; }
+.bg-brand-whitepink{ background-color: var(--brand-whitepink) !important; }
+
+/* ====== Text color helpers ====== */
+.text-brand{ color: var(--brand) !important; }
+.text-brand-blue{ color: var(--brand-blue) !important; }
+.text-brand-pink{ color: var(--brand-pink) !important; }
+.text-brand-whitepink{ color: var(--brand-whitepink) !important; }
+
+/* ====== Border helpers ====== */
+.border-brand{ border-color: var(--brand) !important; }
+.border-brand-blue{ border-color: var(--brand-blue) !important; }
+.border-brand-pink{ border-color: var(--brand-pink) !important; }
+.border-brand-whitepink{ border-color: var(--brand-whitepink) !important; }
+
+/* ===== Buttons – nền đặc ===== */
+.btn-brand{
+  background-color: var(--brand);
+  border-color: var(--brand);
+  color:#fff !important;
+  transition: background-color .15s ease, box-shadow .15s ease;
+}
+.btn-brand:hover,
+.btn-brand:focus{
+  background-color: #2f5836; /* tối hơn #3A6F43 */
+  border-color: #2f5836;
+  color:#fff !important;
+  box-shadow: 0 0 0 .2rem rgba(58,111,67,.25);
+}
+
+.btn-brand-blue{
+  background-color: var(--brand-blue);
+  border-color: var(--brand-blue);
+  color:#fff !important;
+  transition: background-color .15s ease, box-shadow .15s ease;
+}
+.btn-brand-blue:hover,
+.btn-brand-blue:focus{
+  background-color: #0e345a; /* tối hơn #124170 */
+  border-color: #0e345a;
+  color:#fff !important;
+  box-shadow: 0 0 0 .2rem rgba(18,65,112,.25);
+}
+
+/* ===== Buttons – viền (outline) vẫn giữ màu, không bị trắng nền ===== */
+.btn-outline-brand{
+  color: var(--brand) !important;
+  border-color: var(--brand) !important;
+  background-color: transparent;
+  transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.btn-outline-brand:hover,
+.btn-outline-brand:focus{
+  background-color: var(--brand);
+  color:#fff !important;
+  box-shadow: 0 0 0 .2rem rgba(58,111,67,.25);
+}
+
+.btn-outline-brand-blue{
+  color: var(--brand-blue) !important;
+  border-color: var(--brand-blue) !important;
+  background-color: transparent;
+  transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.btn-outline-brand-blue:hover,
+.btn-outline-brand-blue:focus{
+  background-color: var(--brand-blue);
+  color:#fff !important;
+  box-shadow: 0 0 0 .2rem rgba(18,65,112,.25);
+}
+
+/* ====== Form focus tint ====== */
+.form-control:focus, .form-select:focus{
+  border-color: var(--brand);
+  box-shadow: 0 0 0 .2rem rgba(58,111,67,.25);
+}
+
+/* Links theo màu chủ đạo */
+a{ color: var(--brand); }
+a:hover{ filter: brightness(0.5); }

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/base}">
+<head>
+<meta charset="UTF-8">
+<title
+	th:text="${product.id} != null ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm'">Sản
+	phẩm</title>
+</head>
+<body>
+	<section layout:fragment="content">
+		<h1 class="h4 mb-3"
+			th:text="${product.id} != null ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm'"></h1>
+
+		<form th:action="@{/admin/products/saveOrUpdate}"
+			th:object="${product}" method="post" class="row g-3" novalidate>
+
+			<!-- Giữ khóa -->
+			<input type="hidden" th:field="*{id}" />
+
+			<!-- (tuỳ chọn) giữ tham số paging/filter khi quay lại -->
+			<input type="hidden" name="page" th:value="${page}" /> <input
+				type="hidden" name="size" th:value="${size}" /> <input type="hidden"
+				name="q" th:value="${q}" /> <input type="hidden"
+				name="categoryIdFilter" th:value="${categoryId}" />
+
+			<div class="col-md-6">
+				<label class="form-label">Tiêu đề</label> <input
+					class="form-control" th:field="*{title}"
+					placeholder="Nhập tiêu đề sản phẩm" required>
+				<div class="text-danger" th:if="${#fields.hasErrors('title')}"
+					th:errors="*{title}"></div>
+			</div>
+
+			<div class="col-md-3">
+				<label class="form-label">Số lượng</label> <input
+					class="form-control" th:field="*{quantity}" type="number" min="0"
+					required>
+			</div>
+
+			<div class="col-md-3">
+				<label class="form-label">Giá bán</label> <input
+					class="form-control" th:field="*{price}" type="number" step="0.01"
+					min="0" required>
+			</div>
+
+			<div class="col-12">
+				<label class="form-label">Mô tả</label>
+				<textarea class="form-control" th:field="*{description}" rows="3"
+					placeholder="Mô tả sản phẩm"></textarea>
+			</div>
+
+			<div class="col-md-4">
+				<label class="form-label">Thể loại</label>
+				<!-- Gửi categoryId riêng, không bind object -->
+				<select class="form-select" name="categoryId" required>
+					<option value="" th:if="${product.category == null}" selected
+						disabled>-- Chọn thể loại --</option>
+					<option th:each="c : ${categories}" th:value="${c.id}"
+						th:text="${c.name}"
+						th:selected="${product.category != null and product.category.id == c.id}">
+					</option>
+				</select>
+			</div>
+			<div class="col-md-4">
+                <label class="form-label">Người phụ trách</label>
+                <!-- Gửi userId riêng, không bind object -->
+                <select class="form-select" name="userId" required>
+                    <option value="" th:if="${product.user == null}" selected
+                        disabled>-- Chọn người phụ trách --</option>
+                    <option th:each="u : ${users}" th:value="${u.id}"
+                        th:text="${u.fullname}"
+                        th:selected="${product.user != null and product.user.id == u.id}">
+                    </option>
+                </select>
+
+			<div class="col-12 d-flex gap-2">
+				<button class="btn btn-brand" type="submit">Lưu</button>
+				<a class="btn btn-outline-secondary"
+					th:href="@{/admin/products(q=${q}, categoryId=${categoryId}, page=${page}, size=${size})}">Quay
+					lại</a>
+			</div>
+		</form>
+	</section>
+</body>
+</html>

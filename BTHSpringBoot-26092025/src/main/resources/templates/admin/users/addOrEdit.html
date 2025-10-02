@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${user.id != null} ? 'Cập nhật người dùng' : 'Thêm người dùng'">Người dùng</title>
+</head>
+<body>
+<section layout:fragment="content">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-7 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-brand text-white">
+          <strong th:text="${user.id != null} ? 'Cập nhật người dùng' : 'Thêm người dùng'">Người dùng</strong>
+        </div>
+        <div class="card-body">
+          <form id="userForm" th:action="@{/admin/users/saveOrUpdate}" th:object="${user}"
+                method="post" novalidate>
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" name="q" th:value="${q}">
+            <input type="hidden" name="page" th:value="${page}">
+            <input type="hidden" name="size" th:value="${size}">
+
+            <div class="mb-3">
+              <label class="form-label">Họ tên</label>
+              <input class="form-control" th:field="*{fullname}" required>
+              <div class="text-danger" th:if="${#fields.hasErrors('fullname')}" th:errors="*{fullname}"></div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input class="form-control" th:field="*{email}" type="email" required>
+              <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Mật khẩu
+                <small class="text-muted" th:if="${user.id != null}">(để trống nếu không đổi)</small>
+              </label>
+              <input id="passwordField" type="password" th:field="*{password}"
+                     class="form-control"	
+                     autocomplete="new-password"/>
+
+              <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Số điện thoại</label>
+              <input class="form-control" th:field="*{phone}">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Danh mục phụ trách</label>
+              <select class="form-select" name="categoryIds" multiple size="6">
+                <option th:each="c : ${categories}"
+                		th:value="${c.id}"
+                        th:selected="${selectedCategoryIds != null and selectedCategoryIds.contains(c.id)}"
+                        th:text="${c.name}"></option>
+              </select>
+              <div class="form-text">Giữ Ctrl/Cmd để chọn nhiều.</div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <a class="btn btn-outline-secondary"
+                 th:href="@{/admin/users(q=${q}, page=${page}, size=${size})}">Hủy</a>
+              <button class="btn btn-brand" type="submit">Lưu</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JS: đặt cuối body để DOM đã tồn tại -->
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  const isEdit = /*[[${user != null && user.id != null}]]*/ false;
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('#userForm');
+    const pw = document.querySelector('#userForm input[name="password"]');
+    if (form && pw) {
+      form.addEventListener('submit', function() {
+        // khi đang edit: nếu password rỗng thì gán placeholder để pass validation phía server
+        if (isEdit && (pw.value === '' || pw.value == null)) {
+          pw.value = '********';
+        }
+      });
+    }
+  });
+  /*]]>*/
+</script>
+</body>
+</html>
