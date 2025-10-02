@@ -53,7 +53,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/upload").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
-            .csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/graphql")))
+            .csrf(csrf -> csrf
+                    .ignoringRequestMatchers(new AntPathRequestMatcher("/graphql"))
+                    .ignoringRequestMatchers(new AntPathRequestMatcher("/api/upload"))
+                )
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
@@ -64,7 +67,7 @@ public class SecurityConfig {
                 .permitAll()
             )
             .logout(logout -> logout
-                .logoutUrl("/logout")
+        		.logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
                 .logoutSuccessUrl("/login?logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")

@@ -25,27 +25,49 @@ function showAlert(type, msg) {
 }
 
 // ============ Helpers ============
-
+function clearValidation(form) {
+  if (!form) return;
+  form.classList.remove('was-validated');
+  form.querySelectorAll('.is-invalid, .is-valid').forEach(el=>{
+    el.classList.remove('is-invalid','is-valid');
+  });
+  // Ẩn message lỗi nếu có hiển thị cố định
+  form.querySelectorAll('.invalid-feedback, .valid-feedback').forEach(el=>{
+    el.style.display = '';   // trả về mặc định (Bootstrap sẽ tự quản)
+    el.textContent = el.textContent; // giữ nguyên nội dung
+  });
+}
 function resetCategoryForm() {
   const f = document.getElementById('category-form');
+  if (!f) return;
   f.reset();
+  clearValidation(f);
   document.getElementById('category-id').value = '';
   document.getElementById('category-image-url').value = '';
   const img = document.getElementById('category-image-preview');
   img.src = ''; img.classList.add('d-none');
+  // cũng xóa input file nếu user vừa chọn sai ảnh
+  const file = document.getElementById('category-image-file');
+  if (file) file.value = '';
 }
 
 function resetUserForm() {
   const f = document.getElementById('user-form');
+  if (!f) return;
   f.reset();
+  clearValidation(f);
   document.getElementById('user-id').value = '';
   document.getElementById('user-password').required = true;
   document.getElementById('user-role').value = 'USER';
+  // bỏ chọn multi-select
+  for (const opt of document.getElementById('user-categories').options) opt.selected = false;
 }
 
 function resetProductForm() {
   const f = document.getElementById('product-form');
+  if (!f) return;
   f.reset();
+  clearValidation(f);
   document.getElementById('product-id').value = '';
   document.getElementById('product-quantity').value = 0;
 }
@@ -162,6 +184,12 @@ async function loadProducts(filterCategoryId='') {
 }
 
 // ============ EVENTS ============
+// Buttons: Làm mới form
+document.getElementById('category-reset')?.addEventListener('click', resetCategoryForm);
+document.getElementById('user-reset')?.addEventListener('click', resetUserForm);
+
+// Tạo nút làm mới cho Product (HTML ở dưới mục 2.1)
+document.getElementById('product-reset')?.addEventListener('click', resetProductForm);
 
 document.addEventListener('change', (e)=>{
   // preview ảnh khi chọn file
@@ -291,6 +319,7 @@ document.getElementById('category-form').addEventListener('submit', async (e)=>{
     await graphqlFetch(mutation, variables);
     resetCategoryForm();
     await Promise.all([loadCategories(), loadProducts(), loadUsers()]);
+	clearValidation(form);
     showAlert('success','Lưu danh mục thành công.');
   } catch (err) {
     showAlert('danger', err.message);
@@ -327,7 +356,7 @@ document.getElementById('user-form').addEventListener('submit', async (e)=>{
 
   graphqlFetch(mutation, variables)
     .then(()=>Promise.all([loadUsers(), loadProducts()]))
-    .then(()=>{ resetUserForm(); showAlert('success','Lưu người dùng thành công.'); })
+    .then(()=>{ resetUserForm(); clearValidation(form); showAlert('success','Lưu người dùng thành công.'); })
     .catch(err=>showAlert('danger', err.message));
 });
 
@@ -360,7 +389,10 @@ document.getElementById('product-form').addEventListener('submit', (e)=>{
       const cur = document.getElementById('product-category-filter').value;
       return loadProducts(cur);
     })
-    .then(()=>showAlert('success','Lưu sản phẩm thành công.'))
+    .then(()=>{	resetProductForm();
+		  clearValidation(form);
+		  const cur = document.getElementById('product-category-filter').value; 
+		  return loadProducts(cur);})
     .catch(err=>showAlert('danger', err.message));
 });
 
