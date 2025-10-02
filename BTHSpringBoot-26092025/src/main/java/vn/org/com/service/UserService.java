@@ -19,4 +19,5 @@ public interface UserService {
     // forgot password
     Optional<User> findByEmail(String email); 
     boolean resetToTemporaryPassword(String email);
+    long countAll();
 }

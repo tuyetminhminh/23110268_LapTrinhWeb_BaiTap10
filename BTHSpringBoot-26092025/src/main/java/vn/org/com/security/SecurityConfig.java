@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .usernameParameter("email")
                 .passwordParameter("password")
                 .successHandler(loginSuccessHandler)
-                .failureHandler(authenticationFailureHandler()) // <-- ĐÚNG
+                .failureHandler(customAuthFailureHandler()) // 
                 .permitAll()
             )
             .logout(logout -> logout
@@ -81,5 +81,9 @@ public class SecurityConfig {
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
         return cfg.getAuthenticationManager();
+    }
+    @Bean
+    public AuthenticationFailureHandler customAuthFailureHandler() {
+        return new CustomAuthFailureHandler();
     }
 }

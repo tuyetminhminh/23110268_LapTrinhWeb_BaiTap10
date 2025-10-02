@@ -1,135 +1,116 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout/base}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
 <head>
-<meta charset="UTF-8">
-<title>Danh sách sản phẩm</title>
+  <meta charset="UTF-8" />
+  <title>Danh sách sản phẩm</title>
 </head>
 <body>
-	<section layout:fragment="content">
-		<div class="d-flex justify-content-between align-items-center mb-3">
-			<h1 class="h4 m-0">Sản phẩm</h1>
-			<a class="btn btn-brand-blue"
-				th:href="@{/admin/products/new(page=${current}, size=${size}, q=${q}, categoryId=${categoryId})}">
-				+ Thêm mới </a>
-		</div>
+<section layout:fragment="content">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 m-0">Sản phẩm</h1>
+    <!-- USER: KHÔNG có nút Thêm mới -->
+  </div>
 
-		<form class="row g-2 mb-3" th:action="@{/admin/products}" method="get">
-			<div class="col-auto">
-				<input class="form-control" type="text" name="q" th:value="${q}"
-					placeholder="Nhập tiêu đề sản phẩm ...">
-			</div>
-			<div class="col-auto">
-				<select class="form-select" name="categoryId">
-					<option value="" th:selected="${categoryId == null}">--
-						Tất cả thể loại --</option>
-					<option th:each="c : ${categories}" th:value="${c.id}"
-						th:text="${c.name}"
-						th:selected="${categoryId != null and categoryId == c.id}"></option>
-				</select>
-			</div>
-			<div class="col-auto">
-				<button class="btn btn-outline-secondary" type="submit">Tìm</button>
-			</div>
-		</form>
+  <form class="row g-2 mb-3" th:action="@{/user/products}" method="get">
+    <div class="col-auto">
+      <input class="form-control" type="text" name="q" th:value="${q}"
+             placeholder="Nhập tiêu đề sản phẩm ...">
+    </div>
+    <div class="col-auto">
+      <select class="form-select" name="categoryId">
+        <option value="" th:selected="${categoryId == null}">-- Tất cả thể loại --</option>
+        <option th:each="c : ${categories}" th:value="${c.id}"
+                th:text="${c.name}"
+                th:selected="${categoryId != null and categoryId == c.id}"></option>
+      </select>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-outline-secondary" type="submit">Tìm</button>
+      <a class="btn btn-outline-secondary"
+         th:href="@{/user/products}">Xóa lọc</a>
+    </div>
+  </form>
 
-		<div th:if="${message}" class="alert alert-success"
-			th:text="${message}"></div>
+  <div class="table-responsive">
+    <th:block th:if="${pageData != null}">
+      <table class="table table-hover table-striped align-middle shadow-sm rounded">
+        <thead class="table-light">
+          <tr>
+            <th style="width: 90px">ID</th>
+            <th>Tiêu đề</th>
+            <th class="text-end" style="width: 120px">Số lượng</th>
+            <th style="width: 260px">Mô tả</th>
+            <th class="text-end" style="width: 140px">Giá bán</th>
+            <th style="width: 200px">Thể loại</th>
+            <th style="width: 200px">Người tạo</th>
+            <!-- USER: KHÔNG có cột Hành động -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="p : ${pageData.content}">
+            <td th:text="${p.id}">1</td>
+            <td th:text="${p.title}">Sản phẩm</td>
+            <td class="text-end" th:text="${p.quantity}">0</td>
+            <td th:text="${p.description}">Mô tả</td>
+            <td class="text-end"
+                th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}">0</td>
+            <td th:text="${p.category != null ? p.category.name : ''}"></td>
+            <td th:text="${p.user != null ? p.user.fullname : '-'}">-</td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(pageData.content)}">
+            <td colspan="7" class="text-center text-muted">Chưa có dữ liệu</td>
+          </tr>
+        </tbody>
+      </table>
+    </th:block>
+    <th:block th:if="${pageData == null}">
+      <div class="alert alert-warning text-center">Không có dữ liệu sản phẩm để hiển thị.</div>
+    </th:block>
+  </div>
 
-		<div class="table-responsive">
-			<th:block th:if="${pageData != null}">
-				<table
-					class="table table-hover table-striped align-middle shadow-sm rounded">
-					<thead class="table-light">
-						<tr>
-							<th style="width: 90px">ID</th>
-							<th>Tiêu đề</th>
-							<th class="text-end" style="width: 120px">Số lượng</th>
-							<th style="width: 260px">Mô tả</th>
-							<th class="text-end" style="width: 140px">Giá bán</th>
-							<th style="width: 200px">Thể loại</th>
-							    <th style="width: 200px">Người tạo</th>
-							<th class="text-end" style="width: 180px">Hành động</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="p : ${pageData.content}">
-							<td th:text="${p.id}">1</td>
-							<td th:text="${p.title}">Sản phẩm</td>
-							<td class="text-end" th:text="${p.quantity}">0</td>
-							<td th:text="${p.description}">Mô tả</td>
-							<td class="text-end"
-								th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}">0</td>
-							<td th:text="${p.category != null ? p.category.name : ''}"></td>
-							<td th:text="${p.user != null ? p.user.fullname : '-'}">-</td>
-							<td class="text-end"><a
-								class="btn btn-sm btn-outline-primary me-1"
-								th:href="@{/admin/products/{id}/edit(id=${p.id}, page=${current}, size=${size}, q=${q}, categoryId=${categoryId})}"
-								title="Sửa"><i class="bi bi-pencil"></i> Sửa</a>
-								<form class="d-inline"
-									th:action="@{/admin/products/{id}/delete(id=${p.id}, page=${current}, size=${size}, q=${q}, categoryId=${categoryId})}"
-									method="post"
-									onsubmit="return confirm('Bạn có chắc muốn xóa?');">
-									<button type="submit" class="btn btn-sm btn-outline-danger">
-										<i class="bi bi-trash"></i> Xóa
-									</button>
-								</form></td>
-						</tr>
-						<tr th:if="${#lists.isEmpty(pageData.content)}">
-							<td colspan="8" class="text-center text-muted">Chưa có dữ
-								liệu</td>
-						</tr>
-					</tbody>
-				</table>
-			</th:block>
-			<th:block th:if="${pageData == null}">
-				<div class="alert alert-warning text-center">Không có dữ liệu
-					sản phẩm để hiển thị.</div>
-			</th:block>
-		</div>
-
-		<!-- Info + page size -->
-		<div class="d-flex justify-content-between align-items-center">
-			<div class="small text-muted"
-				th:with="start=${pageData.number * pageData.size + (pageData.numberOfElements > 0 ? 1 : 0)},
+  <!-- Info + page size -->
+  <div class="d-flex justify-content-between align-items-center">
+    <div class="small text-muted"
+         th:with="start=${pageData.number * pageData.size + (pageData.numberOfElements > 0 ? 1 : 0)},
                   end=${pageData.number * pageData.size + pageData.numberOfElements},
                   total=${pageData.totalElements}">
-				Hiển thị <b th:text="${start}">0</b>–<b th:text="${end}">0</b> trên
-				<b th:text="${total}">0</b> bản ghi
-			</div>
+      Hiển thị <b th:text="${start}">0</b>–<b th:text="${end}">0</b> trên <b th:text="${total}">0</b> bản ghi
+    </div>
 
-			<form class="d-inline" th:action="@{/admin/products}" method="get">
-				<input type="hidden" name="q" th:value="${q}"> <input
-					type="hidden" name="categoryId" th:value="${categoryId}"> <input
-					type="hidden" name="page" value="1"> <label class="me-1">Hiển
-					thị</label> <select class="form-select d-inline-block" style="width: auto"
-					name="size" onchange="this.form.submit()">
-					<option th:each="s : ${new int[]{5,10,15,25,50,100}}"
-						th:value="${s}" th:text="${s}" th:selected="${s} == ${size}"></option>
-				</select> <span class="ms-1">dòng/trang</span>
-			</form>
-		</div>
+    <form class="d-inline" th:action="@{/user/products}" method="get">
+      <input type="hidden" name="q" th:value="${q}">
+      <input type="hidden" name="categoryId" th:value="${categoryId}">
+      <input type="hidden" name="page" value="1">
+      <label class="me-1">Hiển thị</label>
+      <select class="form-select d-inline-block" style="width: auto"
+              name="size" onchange="this.form.submit()">
+        <option th:each="s : ${new int[]{5,10,15,25,50,100}}"
+                th:value="${s}" th:text="${s}" th:selected="${s} == ${size}"></option>
+      </select>
+      <span class="ms-1">dòng/trang</span>
+    </form>
+  </div>
 
-		<!-- Pagination -->
-		<nav aria-label="Pagination" class="mt-2">
-			<ul class="pagination justify-content-center mb-0">
-				<li class="page-item"
-					th:classappend="${pageData.first} ? 'disabled'"><a
-					class="page-link"
-					th:href="@{/admin/products(page=${pageData.number}, size=${pageData.size}, q=${q}, categoryId=${categoryId})}">«</a>
-				</li>
-				<li class="page-item" th:each="p : ${pageNumbers}"
-					th:classappend="${p} == ${pageData.number + 1} ? 'active'"><a
-					class="page-link" th:text="${p}"
-					th:href="@{/admin/products(page=${p}, size=${pageData.size}, q=${q}, categoryId=${categoryId})}"></a>
-				</li>
-				<li class="page-item" th:classappend="${pageData.last} ? 'disabled'">
-					<a class="page-link"
-					th:href="@{/admin/products(page=${pageData.number + 2}, size=${pageData.size}, q=${q}, categoryId=${categoryId})}">»</a>
-				</li>
-			</ul>
-		</nav>
-	</section>
+  <!-- Pagination -->
+  <nav aria-label="Pagination" class="mt-2">
+    <ul class="pagination justify-content-center mb-0">
+      <li class="page-item" th:classappend="${pageData.first} ? 'disabled'">
+        <a class="page-link"
+           th:href="@{/user/products(page=${pageData.number}, size=${pageData.size}, q=${q}, categoryId=${categoryId})}">«</a>
+      </li>
+      <li class="page-item" th:each="p : ${pageNumbers}"
+          th:classappend="${p} == ${pageData.number + 1} ? 'active'">
+        <a class="page-link" th:text="${p}"
+           th:href="@{/user/products(page=${p}, size=${pageData.size}, q=${q}, categoryId=${categoryId})}"></a>
+      </li>
+      <li class="page-item" th:classappend="${pageData.last} ? 'disabled'">
+        <a class="page-link"
+           th:href="@{/user/products(page=${pageData.number + 2}, size=${pageData.size}, q=${q}, categoryId=${categoryId})}">»</a>
+      </li>
+    </ul>
+  </nav>
+</section>
 </body>
 </html>

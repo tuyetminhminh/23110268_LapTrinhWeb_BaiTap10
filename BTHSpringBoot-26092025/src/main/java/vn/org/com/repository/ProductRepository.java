@@ -35,6 +35,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByTitle(String name);
 
     boolean existsByTitle(String title);
+    
+    List<Product> findTop5ByOrderByIdDesc();
 
     @EntityGraph(attributePaths = {"user","category"})
     @Query("""

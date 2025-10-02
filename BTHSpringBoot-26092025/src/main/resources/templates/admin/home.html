@@ -2,14 +2,137 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
-<head><meta charset="UTF-8"><title>Admin – Trang chủ</title></head>
-<body th:with="pageTitle=${'Trang chủ quản trị'}">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <style>
+    .kpi-card { border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(15,23,42,.08); }
+    .kpi-icon { width: 44px; height: 44px; display:flex; align-items:center; justify-content:center;
+                border-radius: 12px; background: rgba(37,99,235,.12) }
+    .soft-card { border-radius: 16px; border:0; box-shadow: 0 10px 30px rgba(15,23,42,.06); }
+  </style>
+</head>
+<body>
 <section layout:fragment="content">
-  <h2>Khu vực ADMIN</h2>
-  <p>Quản lý danh mục & sản phẩm:</p>
-  <div class="d-flex gap-2">
-    <a class="btn btn-primary" th:href="@{/admin/categories}">Quản lý Category</a>
-    <a class="btn btn-primary" th:href="@{/admin/products}">Quản lý Product</a>
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h4 mb-1">Xin chào, Admin 👋</h1>
+      <div class="text-muted">Tổng quan nhanh hệ thống</div>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-primary" th:href="@{/admin/products/new}"><i class="bi bi-plus-lg me-1"></i>Thêm sản phẩm</a>
+      <a class="btn btn-outline-secondary" th:href="@{/graphql-app.html}"><i class="bi bi-braces-asterisk me-1"></i>GraphQL</a>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+      <div class="card kpi-card p-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="kpi-icon"><i class="bi bi-box-seam"></i></div>
+          <div>
+            <div class="text-muted small">Sản phẩm</div>
+            <div class="h4 m-0" th:text="${totalProducts}">0</div>
+          </div>
+          <div class="ms-auto"><a class="btn btn-sm btn-light" th:href="@{/admin/products}">Xem</a></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card kpi-card p-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="kpi-icon"><i class="bi bi-card-list"></i></div>
+          <div>
+            <div class="text-muted small">Danh mục</div>
+            <div class="h4 m-0" th:text="${totalCategories}">0</div>
+          </div>
+          <div class="ms-auto"><a class="btn btn-sm btn-light" th:href="@{/admin/categories}">Xem</a></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card kpi-card p-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="kpi-icon"><i class="bi bi-people"></i></div>
+          <div>
+            <div class="text-muted small">Người dùng</div>
+            <div class="h4 m-0" th:text="${totalUsers}">0</div>
+          </div>
+          <div class="ms-auto"><a class="btn btn-sm btn-light" th:href="@{/admin/users}">Xem</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 cột: sản phẩm gần đây + thể loại “hot” -->
+  <div class="row g-3">
+    <div class="col-12 col-lg-7">
+      <div class="card soft-card">
+        <div class="card-header bg-white">
+          <strong>Sản phẩm mới nhất</strong>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th style="width:90px">ID</th>
+                  <th>Tiêu đề</th>
+                  <th class="text-end" style="width:120px">Số lượng</th>
+                  <th class="text-end" style="width:140px">Giá</th>
+                  <th style="width:200px">Danh mục</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="p : ${recentProducts}">
+                  <td th:text="${p.id}">1</td>
+                  <td>
+                    <a th:href="@{/admin/products/{id}/edit(id=${p.id})}" th:text="${p.title}">Tiêu đề</a>
+                  </td>
+                  <td class="text-end" th:text="${p.quantity}">0</td>
+                  <td class="text-end"
+                      th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}">0</td>
+                  <td th:text="${p.category != null ? p.category.name : '-'}">-</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(recentProducts)}">
+                  <td colspan="5" class="text-center text-muted p-3">Chưa có dữ liệu</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card-footer bg-white text-end">
+          <a class="btn btn-sm btn-outline-secondary" th:href="@{/admin/products}">Tất cả sản phẩm</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+      <div class="card soft-card h-100">
+        <div class="card-header bg-white">
+          <strong>Danh mục nổi bật</strong>
+        </div>
+        <div class="card-body">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex align-items-center justify-content-between"
+                th:each="c : ${hotCategories}">
+              <div class="me-2">
+                <div class="fw-semibold" th:text="${c.name}">Tên</div>
+                <div class="small text-muted" th:text="${#lists.size(c.products)} + ' sản phẩm'">0 sản phẩm</div>
+              </div>
+              <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/categories}">Xem</a>
+            </li>
+            <li class="list-group-item text-muted text-center" th:if="${#lists.isEmpty(hotCategories)}">
+              Chưa có dữ liệu
+            </li>
+          </ul>
+        </div>
+        <div class="card-footer bg-white text-end">
+          <a class="btn btn-sm btn-outline-secondary" th:href="@{/admin/categories}">Tất cả danh mục</a>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 </body>

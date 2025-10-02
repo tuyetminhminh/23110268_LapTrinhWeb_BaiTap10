@@ -2,12 +2,134 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
-<head><meta charset="UTF-8"><title>User – Trang chủ</title></head>
-<body th:with="pageTitle=${'Trang chủ người dùng'}">
+<head>
+  <meta charset="UTF-8">
+  <title>Trang chủ</title>
+  <style>
+    .welcome { background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 16px; color: #fff; }
+    .quick-card { border:0; border-radius: 16px; box-shadow: 0 10px 30px rgba(15,23,42,.08);}
+    .quick-card:hover { transform: translateY(-2px); transition: .2s ease; }
+  </style>
+</head>
+<body>
 <section layout:fragment="content">
-  <h2>Chào mừng bạn!</h2>
-  <p>Đây là trang dành cho USER. Bạn có thể xem sản phẩm, lọc theo danh mục,…</p>
-  <a class="btn btn-outline-primary" th:href="@{/graphql-app.html}">Mở trang GraphQL demo</a>
+  <!-- Welcome -->
+  <div class="welcome p-4 mb-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div>
+        <div class="h4 mb-1">Chào mừng bạn quay lại! 👋</div>
+        <div class="opacity-75">Khám phá sản phẩm, duyệt danh mục, tìm nhanh nội dung bạn cần.</div>
+      </div>
+      <form class="d-flex" th:action="@{/user/products}" method="get" style="max-width: 420px; width:100%">
+        <input class="form-control form-control-lg me-2" type="text" name="q" placeholder="Tìm sản phẩm...">
+        <button class="btn btn-light btn-lg" type="submit"><i class="bi bi-search"></i></button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Quick actions -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+      <a class="card quick-card p-3 text-decoration-none text-body" th:href="@{/user/products}">
+        <div class="d-flex align-items-center gap-3">
+          <div class="kpi-icon"><i class="bi bi-box-seam"></i></div>
+          <div>
+            <div class="fw-semibold">Duyệt sản phẩm</div>
+            <div class="text-muted small">Tìm, lọc và phân trang</div>
+          </div>
+          <div class="ms-auto text-muted"><i class="bi bi-arrow-right"></i></div>
+        </div>
+      </a>
+    </div>
+    <div class="col-12 col-md-4">
+      <a class="card quick-card p-3 text-decoration-none text-body" th:href="@{/user/categories}">
+        <div class="d-flex align-items-center gap-3">
+          <div class="kpi-icon"><i class="bi bi-card-list"></i></div>
+          <div>
+            <div class="fw-semibold">Xem danh mục</div>
+            <div class="text-muted small">Các nhóm sản phẩm</div>
+          </div>
+          <div class="ms-auto text-muted"><i class="bi bi-arrow-right"></i></div>
+        </div>
+      </a>
+    </div>
+    <div class="col-12 col-md-4">
+      <a class="card quick-card p-3 text-decoration-none text-body" th:href="@{/user/products?q=hot}">
+        <div class="d-flex align-items-center gap-3">
+          <div class="kpi-icon"><i class="bi bi-fire"></i></div>
+          <div>
+            <div class="fw-semibold">Xu hướng</div>
+            <div class="text-muted small">Sản phẩm nổi bật gần đây</div>
+          </div>
+          <div class="ms-auto text-muted"><i class="bi bi-arrow-right"></i></div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 2 cột: sản phẩm mới + danh mục gợi ý -->
+  <div class="row g-3">
+    <div class="col-12 col-lg-7">
+      <div class="card soft-card">
+        <div class="card-header bg-white"><strong>Sản phẩm mới</strong></div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th style="width:90px">ID</th>
+                  <th>Tiêu đề</th>
+                  <th class="text-end" style="width:120px">Số lượng</th>
+                  <th class="text-end" style="width:140px">Giá</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="p : ${recentProducts}">
+                  <td th:text="${p.id}">1</td>
+                  <td><a th:href="@{/user/products(q=${p.title})}" th:text="${p.title}">Tiêu đề</a></td>
+                  <td class="text-end" th:text="${p.quantity}">0</td>
+                  <td class="text-end"
+                      th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')}">0</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(recentProducts)}">
+                  <td colspan="4" class="text-center text-muted p-3">Chưa có dữ liệu</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card-footer bg-white text-end">
+          <a class="btn btn-sm btn-outline-secondary" th:href="@{/user/products}">Tất cả sản phẩm</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+      <div class="card soft-card h-100">
+        <div class="card-header bg-white"><strong>Danh mục gợi ý</strong></div>
+        <div class="card-body">
+          <div class="row g-2" th:if="${!#lists.isEmpty(hotCategories)}">
+            <div class="col-12" th:each="c : ${hotCategories}">
+              <a class="d-flex align-items-center p-2 border rounded text-decoration-none text-body"
+                 th:href="@{/user/products(categoryId=${c.id})}">
+                <div class="flex-grow-1">
+                  <div class="fw-semibold" th:text="${c.name}">Tên</div>
+                  <div class="small text-muted" th:text="${#lists.size(c.products)} + ' sản phẩm'">0 sản phẩm</div>
+                </div>
+                <i class="bi bi-chevron-right text-muted"></i>
+              </a>
+            </div>
+          </div>
+          <div class="text-center text-muted" th:if="${#lists.isEmpty(hotCategories)}">
+            Chưa có dữ liệu
+          </div>
+        </div>
+        <div class="card-footer bg-white text-end">
+          <a class="btn btn-sm btn-outline-secondary" th:href="@{/user/categories}">Tất cả danh mục</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 </body>
 </html>

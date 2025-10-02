@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vn.org.com.entity.Product;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
@@ -20,4 +21,6 @@ public interface ProductService {
 	
         boolean existsByTitle(String title);
 	Page<Product> search(String q, Long categoryId, int page, int size);
+	long countAll();
+	List<Product> findTop5ByOrderByIdDesc();
 }

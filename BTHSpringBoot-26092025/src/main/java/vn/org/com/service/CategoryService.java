@@ -24,4 +24,6 @@ public interface CategoryService {
     
     boolean nameExists(String name, Long excludeId);
 	Object saveDto(@Valid CategoryModel dto);
+	long countAll();
+	List<Category> findTop5ByMostProducts();
 }

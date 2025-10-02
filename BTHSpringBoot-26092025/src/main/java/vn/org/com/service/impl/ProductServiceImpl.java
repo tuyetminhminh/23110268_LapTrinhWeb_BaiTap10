@@ -15,6 +15,7 @@ import vn.org.com.entity.Product;
 import vn.org.com.repository.ProductRepository;
 import vn.org.com.service.ProductService;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -89,5 +90,17 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = PageRequest.of(p, s, Sort.by(Sort.Direction.DESC, "id"));
         return search(q, categoryId, pageable);
         }
+
+	@Override
+	public long countAll() {
+		// TODO Auto-generated method stub
+		return repo.count();
+	}
+
+	@Override
+	public List<Product> findTop5ByOrderByIdDesc() {
+		// TODO Auto-generated method stub
+		return repo.findTop5ByOrderByIdDesc();
+	}
 
 }

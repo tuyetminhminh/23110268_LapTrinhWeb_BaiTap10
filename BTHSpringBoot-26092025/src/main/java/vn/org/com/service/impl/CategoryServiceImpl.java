@@ -69,4 +69,19 @@ public class CategoryServiceImpl implements CategoryService {
 		return null;
 	}
 
+	@Override
+	public long countAll() {
+		// TODO Auto-generated method stub
+		return repo.count();
+	}
+
+	@Override
+	public List<Category> findTop5ByMostProducts() {
+		// Ưu tiên thống kê theo số lượng sản phẩm:
+	    var topByProducts = repo.findTopMostProducts(org.springframework.data.domain.PageRequest.of(0, 5));
+	    if (topByProducts != null && !topByProducts.isEmpty()) return topByProducts;
+	    // Fallback: nếu chưa có mapping products hoặc DB rỗng → lấy 5 danh mục mới nhất
+		return repo.findTop5ByOrderByIdDesc();
+	}
+
 }
