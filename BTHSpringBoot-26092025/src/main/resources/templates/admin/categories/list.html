@@ -25,7 +25,9 @@
     </div>
     <div class="col-auto">
       <button class="btn btn-outline-secondary" type="submit">Tìm</button>
+      <a class="btn btn-outline-secondary" th:href="@{/admin/categories}">Xóa bộ lọc</a>
     </div>
+    
   </form>
 
   <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>

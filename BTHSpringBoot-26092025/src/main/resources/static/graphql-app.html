@@ -1,263 +1,231 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout/base}">
+<html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>GraphQL Product Management</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-<style>
-body {
-	background-color: #f7f9fb;
-}
-
-header {
-	background: linear-gradient(135deg, #2563eb, #1d4ed8);
-	color: #fff;
-	padding: 2rem 0;
-	margin-bottom: 2rem;
-}
-
-section {
-	background: #fff;
-	border-radius: 0.75rem;
-	box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-	padding: 1.5rem;
-	margin-bottom: 1.5rem;
-}
-
-.table-responsive {
-	max-height: 320px;
-	overflow: auto;
-}
-
-.badge-category {
-	background-color: rgba(37, 99, 235, 0.15);
-	color: #1d4ed8;
-}
-
-.form-section-title {
-	font-size: 1.1rem;
-	font-weight: 600;
-	margin-bottom: 0.75rem;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>GraphQL CRUD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    body{background:#f6f8fb}
+    header, footer{background:#000B58;color:#fff}
+    .badge-category{background:rgba(13,110,253,.15);color:#0d6efd}
+    .img-thumb{width:60px;height:60px;object-fit:cover;border-radius:.5rem;border:1px solid #e5e7eb}
+  </style>
 </head>
 <body>
-	<header class="text-center">
-		<div class="container">
-			<h1 class="display-6 fw-semibold">Admin - Quản lý bằng GraphQL</h1>
-			<p>🎗️🎗️🎗️🎗️🎗️🎗️</p>
-		</div>
-	</header>
-	<main class="container mb-5">
-		<section id="category-section">
-			<div
-				class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-				<h2 class="h4 m-0">Danh mục</h2>
-				<button class="btn btn-outline-secondary" type="button"
-					id="category-reset">Làm mới form</button>
-			</div>
-			<div class="row g-4">
-				<div class="col-12 col-lg-4">
-					<div class="form-section-title">Thêm / cập nhật danh mục</div>
-					<form id="category-form" class="needs-validation" novalidate>
-						<input type="hidden" name="id" id="category-id">
-						<div class="mb-3">
-							<label for="category-name" class="form-label">Tên danh
-								mục</label> <input id="category-name" name="name" class="form-control"
-								required>
-							<div class="invalid-feedback">Vui lòng nhập tên danh mục.</div>
-						</div>
-						<div class="mb-3">
-							<label for="category-images" class="form-label">Hình ảnh</label>
-							<input id="category-images" name="images" class="form-control"
-								placeholder="URL hình ảnh (tùy chọn)">
-						</div>
-						<button class="btn btn-primary w-100" type="submit">Lưu
-							danh mục</button>
-					</form>
-				</div>
-				<div class="col-12 col-lg-8">
-					<div class="table-responsive">
-						<table class="table table-hover align-middle mb-0"
-							id="category-table">
-							<thead class="table-light">
-								<tr>
-									<th style="width: 80px">ID</th>
-									<th>Tên</th>
-									<th>Hình ảnh</th>
-									<th style="width: 150px" class="text-end">Thao tác</th>
-								</tr>
-							</thead>
-							<tbody></tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-		</section>
+<header class="py-2">
+  <div class="container d-flex justify-content-between align-items-center">
+    <a class="navbar-brand text-white text-decoration-none fw-semibold" href="/home">Bài tập thực hành số 10</a>
+    <a class="btn btn-sm btn-light" href="/logout">Đăng xuất</a>
+  </div>
+</header>
 
-		<section id="user-section">
-			<div
-				class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-				<h2 class="h4 m-0">Người dùng</h2>
-				<button class="btn btn-outline-secondary" type="button"
-					id="user-reset">Làm mới form</button>
-			</div>
-			<div class="row g-4">
-				<div class="col-12 col-lg-4">
-					<div class="form-section-title">Thêm / cập nhật người dùng</div>
-					<form id="user-form" class="needs-validation" novalidate>
-						<input type="hidden" name="id" id="user-id">
-						<div class="mb-3">
-							<label class="form-label" for="user-fullname">Họ tên</label> <input
-								class="form-control" id="user-fullname" name="fullname" required>
-							<div class="invalid-feedback">Vui lòng nhập họ tên.</div>
-						</div>
-						<div class="mb-3">
-							<label class="form-label" for="user-email">Email</label> <input
-								class="form-control" id="user-email" type="email" name="email"
-								required>
-							<div class="invalid-feedback">Email chưa hợp lệ.</div>
-						</div>
-						<div class="mb-3">
-							<label class="form-label" for="user-password">Mật khẩu</label> <input
-								class="form-control" id="user-password" type="password"
-								name="password" required>
-							<div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
-						</div>
-						<div class="mb-3">
-							<label class="form-label" for="user-phone">Số điện thoại</label>
-							<input class="form-control" id="user-phone" name="phone">
-						</div>
-						<div class="mb-3">
-							<label class="form-label" for="user-categories">Danh mục
-								phụ trách</label> <select id="user-categories" name="categoryIds"
-								class="form-select" multiple size="5"></select>
-							<div class="form-text">Giữ Ctrl (Windows) hoặc Command
-								(Mac) để chọn nhiều danh mục.</div>
-						</div>
-						<div class="mb-3">
-							<label class="form-label" for="user-role">Quyền</label> <select
-								class="form-select" id="user-role" name="role">
-								<option value="USER">USER</option>
-								<option value="ADMIN">ADMIN</option>
-							</select>
-						</div>
+<main class="container my-4">
+  <!-- Alerts chung -->
+  <div id="global-alert" class="alert d-none" role="alert"></div>
 
-						<button class="btn btn-primary w-100" type="submit">Lưu
-							người dùng</button>
-					</form>
-				</div>
-				<div class="col-12 col-lg-8">
-					<div class="table-responsive">
-						<table class="table table-striped align-middle mb-0"
-							id="user-table">
-							<thead class="table-light">
-								<tr>
-									<th style="width: 80px">ID</th>
-									<th>Họ tên</th>
-									<th>Email</th>
-									<th>Điện thoại</th>
-									<th>Role</th>									
-									<th>Danh mục</th>
-									<th style="width: 150px" class="text-end">Thao tác</th>
-								</tr>
-							</thead>
-							<tbody></tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-		</section>
+  <!-- ============== CATEGORY ============== -->
+  <section class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 m-0">Danh mục</h2>
+      <button class="btn btn-outline-secondary btn-sm" id="category-reset">Làm mới form</button>
+    </div>
+    <div class="row g-4">
+      <div class="col-12 col-lg-4">
+        <form id="category-form" class="needs-validation" novalidate>
+          <input type="hidden" id="category-id">
+          <div class="mb-3">
+            <label class="form-label" for="category-name">Tên danh mục</label>
+            <input id="category-name" class="form-control" required>
+            <div class="invalid-feedback">Vui lòng nhập tên danh mục.</div>
+          </div>
 
-		<section id="product-section">
-			<div
-				class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-				<h2 class="h4 m-0">Sản phẩm</h2>
-				<div class="d-flex gap-2 flex-wrap">
-					<select id="product-category-filter"
-						class="form-select form-select-sm" style="min-width: 200px">
-						<option value="">-- Tất cả danh mục --</option>
-					</select>
-					<button class="btn btn-outline-secondary btn-sm" type="button"
-						id="product-filter-reset">Bỏ lọc</button>
-				</div>
-			</div>
-			<div class="row g-4">
-				<div class="col-12 col-xl-5">
-					<div class="form-section-title">Thêm / cập nhật sản phẩm</div>
-					<form id="product-form" class="needs-validation" novalidate>
-						<input type="hidden" name="id" id="product-id">
-						<div class="mb-3">
-							<label class="form-label" for="product-title">Tiêu đề</label> <input
-								class="form-control" id="product-title" name="title" required>
-							<div class="invalid-feedback">Vui lòng nhập tiêu đề sản
-								phẩm.</div>
-						</div>
-						<div class="row g-3">
-							<div class="col-6">
-								<label class="form-label" for="product-quantity">Số
-									lượng</label> <input class="form-control" id="product-quantity"
-									name="quantity" type="number" min="0" value="0" required>
-								<div class="invalid-feedback">Số lượng không hợp lệ.</div>
-							</div>
-							<div class="col-6">
-								<label class="form-label" for="product-price">Giá bán</label> <input
-									class="form-control" id="product-price" name="price"
-									type="number" step="0.01" min="0" required>
-								<div class="invalid-feedback">Giá bán không hợp lệ.</div>
-							</div>
-						</div>
-						<div class="mb-3 mt-3">
-							<label class="form-label" for="product-description">Mô tả</label>
-							<textarea class="form-control" id="product-description"
-								name="description" rows="3"></textarea>
-						</div>
-						<div class="mb-3">
-							<label class="form-label" for="product-category">Danh mục</label>
-							<select class="form-select" id="product-category"
-								name="categoryId" required></select>
-							<div class="invalid-feedback">Vui lòng chọn danh mục.</div>
-						</div>
-						<div class="mb-3">
-							<label class="form-label" for="product-user">Người phụ
-								trách</label> <select class="form-select" id="product-user"
-								name="userId" required></select>
-							<div class="invalid-feedback">Vui lòng chọn người phụ
-								trách.</div>
-						</div>
-						<button class="btn btn-primary w-100" type="submit">Lưu
-							sản phẩm</button>
-					</form>
-				</div>
-				<div class="col-12 col-xl-7">
-					<div class="table-responsive">
-						<table class="table table-hover align-middle mb-0"
-							id="product-table">
-							<thead class="table-light">
-								<tr>
-									<th style="width: 80px">ID</th>
-									<th>Tiêu đề</th>
-									<th class="text-end" style="width: 100px">SL</th>
-									<th>Mô tả</th>
-									<th class="text-end" style="width: 120px">Giá</th>
-									<th>Danh mục</th>
-									<th>Người phụ trách</th>
-									<th style="width: 150px" class="text-end">Thao tác</th>
-								</tr>
-							</thead>
-							<tbody></tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-		</section>
-	</main>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="/js/graphql-app.js"></script>
+          <!-- ẢNH: chọn file + preview + giữ url ở hidden sau khi upload -->
+          <div class="mb-2">
+            <label class="form-label">Hình ảnh</label>
+            <input id="category-image-file" type="file" accept="image/*" class="form-control">
+            <input id="category-image-url" type="hidden">
+            <div class="form-text">Chọn ảnh từ máy. Ảnh sẽ được tải lên rồi lưu đường dẫn.</div>
+          </div>
+          <div class="mb-3">
+            <img id="category-image-preview" class="img-thumb d-none" alt="preview">
+          </div>
+
+          <button class="btn btn-primary w-100" type="submit">Lưu danh mục</button>
+        </form>
+      </div>
+      <div class="col-12 col-lg-8">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle" id="category-table">
+            <thead class="table-light">
+              <tr>
+                <th style="width:80px">ID</th>
+                <th>Tên</th>
+                <th style="width:120px">Hình</th>
+                <th style="width:160px" class="text-end">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody><!-- render bằng JS --></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== USER ============== -->
+  <section class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 m-0">Người dùng</h2>
+      <button class="btn btn-outline-secondary btn-sm" id="user-reset">Làm mới form</button>
+    </div>
+    <div class="row g-4">
+      <div class="col-12 col-lg-4">
+        <form id="user-form" class="needs-validation" novalidate>
+          <input type="hidden" id="user-id">
+          <div class="mb-3">
+            <label class="form-label" for="user-fullname">Họ tên</label>
+            <input id="user-fullname" class="form-control" required>
+            <div class="invalid-feedback">Vui lòng nhập họ tên.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="user-email">Email</label>
+            <input id="user-email" class="form-control" type="email" required>
+            <div class="invalid-feedback">Email chưa hợp lệ.</div>
+          </div>
+
+          <!-- Mật khẩu + mắt -->
+          <div class="mb-3">
+            <label class="form-label" for="user-password">Mật khẩu</label>
+            <div class="input-group">
+              <input id="user-password" class="form-control" type="password" minlength="6" required>
+              <button type="button" class="btn btn-outline-secondary" id="toggle-user-password"
+                      title="Hiện/ẩn mật khẩu"><i class="bi bi-eye"></i></button>
+            </div>
+            <div class="invalid-feedback">Mật khẩu tối thiểu 6 ký tự.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="user-phone">SĐT</label>
+            <input id="user-phone" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="user-role">Quyền</label>
+            <select id="user-role" class="form-select">
+              <option value="USER">USER</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="user-categories">Danh mục phụ trách</label>
+            <select id="user-categories" class="form-select" multiple size="5"></select>
+            <div class="form-text">Giữ Ctrl/⌘ để chọn nhiều.</div>
+          </div>
+
+          <button class="btn btn-primary w-100" type="submit">Lưu người dùng</button>
+        </form>
+      </div>
+      <div class="col-12 col-lg-8">
+        <div class="table-responsive">
+          <table class="table table-striped align-middle" id="user-table">
+            <thead class="table-light">
+              <tr>
+                <th style="width:80px">ID</th>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>SĐT</th>
+                <th>Role</th>
+                <th>Danh mục</th>
+                <th style="width:160px" class="text-end">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody><!-- render bằng JS --></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== PRODUCT ============== -->
+  <section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 m-0">Sản phẩm</h2>
+      <div class="d-flex gap-2">
+        <select id="product-category-filter" class="form-select form-select-sm" style="min-width:220px">
+          <option value="">-- Tất cả danh mục --</option>
+        </select>
+        <button class="btn btn-outline-secondary btn-sm" id="product-filter-reset">Bỏ lọc</button>
+      </div>
+    </div>
+    <div class="row g-4">
+      <div class="col-12 col-xl-5">
+        <form id="product-form" class="needs-validation" novalidate>
+          <input type="hidden" id="product-id">
+          <div class="mb-3">
+            <label class="form-label" for="product-title">Tiêu đề</label>
+            <input id="product-title" class="form-control" required>
+            <div class="invalid-feedback">Vui lòng nhập tiêu đề.</div>
+          </div>
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="form-label" for="product-quantity">Số lượng</label>
+              <input id="product-quantity" type="number" min="0" class="form-control" value="0" required>
+              <div class="invalid-feedback">Số lượng không hợp lệ.</div>
+            </div>
+            <div class="col-6">
+              <label class="form-label" for="product-price">Giá bán</label>
+              <input id="product-price" type="number" min="0" step="0.01" class="form-control" required>
+              <div class="invalid-feedback">Giá bán không hợp lệ.</div>
+            </div>
+          </div>
+          <div class="mb-3 mt-3">
+            <label class="form-label" for="product-description">Mô tả</label>
+            <textarea id="product-description" class="form-control" rows="3"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="product-category">Danh mục</label>
+            <select id="product-category" class="form-select" required></select>
+            <div class="invalid-feedback">Vui lòng chọn danh mục.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="product-user">Người phụ trách</label>
+            <select id="product-user" class="form-select" required></select>
+            <div class="invalid-feedback">Vui lòng chọn người phụ trách.</div>
+          </div>
+          <button class="btn btn-primary w-100" type="submit">Lưu sản phẩm</button>
+        </form>
+      </div>
+      <div class="col-12 col-xl-7">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle" id="product-table">
+            <thead class="table-light">
+              <tr>
+                <th style="width:80px">ID</th>
+                <th>Tiêu đề</th>
+                <th class="text-end" style="width:90px">SL</th>
+                <th>Mô tả</th>
+                <th class="text-end" style="width:120px">Giá</th>
+                <th>Danh mục</th>
+                <th>Người phụ trách</th>
+                <th style="width:160px" class="text-end">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody><!-- render bằng JS --></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="py-3 mt-4">
+  <div class="container small text-center">
+  <a>23110268 - Phạm Thị Tuyết Minh</a>  
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/graphql-app.js"></script>
+<script src="/js/graphql-app.extras.js"></script>
 </body>
 </html>

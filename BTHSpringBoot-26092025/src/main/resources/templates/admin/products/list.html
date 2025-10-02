@@ -32,6 +32,12 @@
 			<div class="col-auto">
 				<button class="btn btn-outline-secondary" type="submit">Tìm</button>
 			</div>
+
+			<div class="col-auto">
+				<button class="btn btn-outline-secondary" type="submit">Tìm</button>
+				<a class="btn btn-outline-secondary" th:href="@{/admin/products}">Xóa
+					lọc</a>
+			</div>
 		</form>
 
 		<div th:if="${message}" class="alert alert-success"
@@ -49,7 +55,7 @@
 							<th style="width: 260px">Mô tả</th>
 							<th class="text-end" style="width: 140px">Giá bán</th>
 							<th style="width: 200px">Thể loại</th>
-							    <th style="width: 200px">Người tạo</th>
+							<th style="width: 200px">Người tạo</th>
 							<th class="text-end" style="width: 180px">Hành động</th>
 						</tr>
 					</thead>
