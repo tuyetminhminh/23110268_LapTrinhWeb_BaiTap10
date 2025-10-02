@@ -5,6 +5,7 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import vn.org.com.entity.User;
 import vn.org.com.entity.Category;
@@ -19,8 +20,10 @@ import java.util.stream.Collectors;
 @Controller
 @RequiredArgsConstructor
 public class UserGraphQLController {
+
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final PasswordEncoder passwordEncoder; // <-- thêm DI
 
     @QueryMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -40,13 +43,20 @@ public class UserGraphQLController {
                            @Argument String email,
                            @Argument String password,
                            @Argument String phone,
+                           @Argument User.Role role,
                            @Argument List<Long> categoryIds) {
+
         User user = User.builder()
                 .fullname(fullname)
                 .email(email)
-                .password(password)
-                .phoneVN(phone)
+                // mã hoá password
+                .password(passwordEncoder.encode(password))
+                // dùng đúng property 'phone' để khớp SDL
+                .phone(phone)
+                // default role nếu null
+                .role(role != null ? role : User.Role.USER)
                 .build();
+
         if (categoryIds != null && !categoryIds.isEmpty()) {
             Set<Category> categories = categoryRepository.findAllById(categoryIds)
                     .stream().collect(Collectors.toSet());
@@ -62,19 +72,28 @@ public class UserGraphQLController {
                            @Argument String email,
                            @Argument String password,
                            @Argument String phone,
+                           @Argument User.Role role,
                            @Argument List<Long> categoryIds) {
+
         Optional<User> opt = userRepository.findById(id);
         if (opt.isEmpty()) return null;
+
         User user = opt.get();
+
         if (fullname != null) user.setFullname(fullname);
         if (email != null) user.setEmail(email);
-        if (password != null) user.setPassword(password);
-        if (phone != null) user.setPhoneVN(phone);
+        if (password != null && !password.isBlank()) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
+        if (phone != null) user.setPhone(phone);
+        if (role != null) user.setRole(role);
+
         if (categoryIds != null) {
             Set<Category> categories = categoryRepository.findAllById(categoryIds)
                     .stream().collect(Collectors.toSet());
             user.setCategories(categories);
         }
+
         return userRepository.save(user);
     }
 

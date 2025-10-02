@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -22,7 +23,6 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final LoginSuccessHandler loginSuccessHandler;
 
-    // Dùng interface cho thống nhất với nơi tiêm (UserServiceImpl)
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -33,6 +33,7 @@ public class SecurityConfig {
         DaoAuthenticationProvider p = new DaoAuthenticationProvider();
         p.setUserDetailsService(userDetailsService);
         p.setPasswordEncoder(passwordEncoder());
+        p.setHideUserNotFoundExceptions(false); // để phân biệt "không có tài khoản" vs "sai mật khẩu"
         return p;
     }
 
@@ -40,27 +41,23 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                // Public pages
                 .requestMatchers("/", "/home", "/login", "/register", "/forgot-password").permitAll()
-                // Static assets (tùy dự án bạn đang dùng /image/ hay /images/)
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/image/**").permitAll()
-                // GraphQL/GraphiQL (mở khi demo; muốn khóa thì chuyển thành hasRole)
-                .requestMatchers("/graphql", "/graphiql/**").hasAnyRole("ADMIN")
-                // Role-based areas
+                .requestMatchers("/graphql-app.html", "/js/graphql-app.js").hasRole("ADMIN")
+                .requestMatchers("/graphiql/**").hasRole("ADMIN")
+                .requestMatchers("/graphql").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                // Everything else must be authenticated
                 .anyRequest().authenticated()
             )
-            // Nếu bạn gọi POST /graphql bằng fetch, bỏ CSRF cho endpoint này
             .csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/graphql")))
             .formLogin(form -> form
-                .loginPage("/login")              // GET /login
-                .loginProcessingUrl("/login")     // <-- ĐỔI về /login để khớp th:action="@{/login}"
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
                 .usernameParameter("email")
                 .passwordParameter("password")
                 .successHandler(loginSuccessHandler)
-                .failureUrl("/login?error")
+                .failureHandler(authenticationFailureHandler()) // <-- ĐÚNG
                 .permitAll()
             )
             .logout(logout -> logout
@@ -70,10 +67,15 @@ public class SecurityConfig {
                 .deleteCookies("JSESSIONID")
                 .permitAll()
             )
-            .httpBasic(Customizer.withDefaults()); // tiện debug API
+            .httpBasic(Customizer.withDefaults());
 
         http.authenticationProvider(authProvider());
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return new CustomAuthFailureHandler(); // class bạn đã tạo
     }
 
     @Bean

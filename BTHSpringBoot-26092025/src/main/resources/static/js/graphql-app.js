@@ -39,6 +39,8 @@ function resetUserForm() {
   form.reset();
   form.querySelector('#user-id').value = '';
   document.getElementById('user-password').required = true;
+  const roleSel = document.getElementById('user-role');
+  if (roleSel) roleSel.value = 'USER';
 }
 
 function resetProductForm() {
@@ -56,8 +58,8 @@ function renderCategoryOptions() {
 
   const optionsHtml = cache.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
   categorySelect.innerHTML = '<option value="" disabled selected>-- Chọn danh mục --</option>' + optionsHtml;
-  categoryFilter.innerHTML = '<option value="">-- Tất cả danh mục --</option>' + optionsHtml;
-  userCategorySelect.innerHTML = optionsHtml;
+  if (categoryFilter) categoryFilter.innerHTML = '<option value="">-- Tất cả danh mục --</option>' + optionsHtml;
+  if (userCategorySelect) userCategorySelect.innerHTML = optionsHtml;
 }
 
 function renderUserOptions() {
@@ -88,12 +90,13 @@ function renderUserTable() {
       <td>${user.fullname}</td>
       <td>${user.email}</td>
       <td>${user.phone || ''}</td>
+	  <td>${user.role || 'USER'}</td>
       <td>${(user.categories || []).map(c => `<span class="badge badge-category me-1">${c.name}</span>`).join('')}</td>
       <td class="text-end">
         <button class="btn btn-sm btn-outline-primary me-1" data-action="edit" data-id="${user.id}">Sửa</button>
         <button class="btn btn-sm btn-outline-danger" data-action="delete" data-id="${user.id}">Xóa</button>
       </td>
-    </tr>`).join('') || '<tr><td colspan="6" class="text-center text-muted">Chưa có người dùng</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="7" class="text-center text-muted">Chưa có người dùng</td></tr>';
 }
 
 function renderProductTable() {
@@ -122,7 +125,7 @@ async function loadCategories() {
 }
 
 async function loadUsers() {
-  const data = await graphqlFetch(`query { getAllUsers { id fullname email phone categories { id name } } }`);
+  const data = await graphqlFetch(`query { getAllUsers { id fullname email phone role categories { id name } } }`);
   cache.users = data.getAllUsers || [];
   renderUserTable();
   renderUserOptions();
@@ -185,6 +188,8 @@ function handleUserTableClick(event) {
     form.querySelector('#user-phone').value = user.phone || '';
     form.querySelector('#user-password').value = '';
     document.getElementById('user-password').required = false;
+	const roleSel = document.getElementById('user-role');
+	if (roleSel) roleSel.value = (user.role || 'USER');
     const selectedIds = new Set((user.categories || []).map(c => String(c.id)));
     for (const option of document.getElementById('user-categories').options) {
       option.selected = selectedIds.has(option.value);
@@ -261,8 +266,9 @@ async function handleUserSubmit(event) {
   const passwordValue = form.querySelector('#user-password').value;
   const phone = form.querySelector('#user-phone').value.trim();
   const categoryIds = Array.from(form.querySelector('#user-categories').selectedOptions).map(o => o.value);
-
-  const variables = { id, fullname, email, phone: phone || null, categoryIds };
+  const role = (form.querySelector('#user-role')?.value || 'USER');
+  
+  const variables = { id, fullname, email, phone: phone || null, categoryIds, role };
   if (!id) {
     variables.password = passwordValue;
     if (!passwordValue) {
@@ -273,10 +279,10 @@ async function handleUserSubmit(event) {
     variables.password = passwordValue;
   }
 
-  const mutation = id ? `mutation($id: ID!, $fullname: String, $email: String, $password: String, $phone: String, $categoryIds: [ID!]) {
-    updateUser(id: $id, fullname: $fullname, email: $email, password: $password, phone: $phone, categoryIds: $categoryIds) { id }
-  }` : `mutation($fullname: String!, $email: String!, $password: String!, $phone: String, $categoryIds: [ID!]) {
-    createUser(fullname: $fullname, email: $email, password: $password, phone: $phone, categoryIds: $categoryIds) { id }
+  const mutation = id ? `mutation($id: ID!, $fullname: String, $email: String, $password: String, $phone: String, $categoryIds: [ID!], $role: Role) {
+    updateUser(id: $id, fullname: $fullname, email: $email, password: $password, phone: $phone, categoryIds: $categoryIds, role: $role) { id }
+  }` : `mutation($fullname: String!, $email: String!, $password: String!, $phone: String, $categoryIds: [ID!], $role: Role) {
+    createUser(fullname: $fullname, email: $email, password: $password, phone: $phone, categoryIds: $categoryIds, role: $role) { id }
   }`;
 
   graphqlFetch(mutation, variables)
@@ -299,6 +305,7 @@ async function handleProductSubmit(event) {
   const quantity = Number(form.querySelector('#product-quantity').value || 0);
   const description = form.querySelector('#product-description').value.trim();
   const price = Number(form.querySelector('#product-price').value || 0);
+  if (Number.isNaN(price)) { showError(new Error('Giá bán không hợp lệ')); return; }
   const categoryId = form.querySelector('#product-category').value;
   const userId = form.querySelector('#product-user').value;
 

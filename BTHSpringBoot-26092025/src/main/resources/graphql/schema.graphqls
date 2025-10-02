@@ -1,60 +1,101 @@
 type Category {
-    id: ID!
-    name: String!
-    images: String
-    products: [Product]
-    users: [User]
+  id: ID!
+  name: String!
+  images: String
+  products: [Product]
+  users: [User]
+}
+
+enum Role {
+  ADMIN
+  USER
 }
 
 type User {
-    id: ID!
-    fullname: String!
-    email: String!
-    password: String!
-    phone: String
-    categories: [Category]
-    products: [Product]
+  id: ID!
+  fullname: String!
+  email: String!
+  password: String!
+  phone: String
+  role: Role!
+  categories: [Category]
+  products: [Product]
 }
 
 type Product {
-    id: ID!
-    title: String!
-    quantity: Int!
-    description: String
-    price: Float!
-    category: Category
-    user: User
+  id: ID!
+  title: String!
+  quantity: Int!
+  description: String
+  price: Float!
+  category: Category
+  user: User
 }
 
+# (không bắt buộc, hiện chưa dùng trong mutation)
 input ProductInput {
   title: String
   quantity: Int
   description: String
   price: Float
-  userId: ID         # truyền userId khi tạo/cập nhật
+  userId: ID
   categoryId: ID
 }
 
 type Query {
-    allProductsSortedByPrice: [Product]
-    productsByCategory(categoryId: ID!): [Product]
-    getAllUsers: [User]
-    getUser(id: ID!): User
-    getAllCategories: [Category]
-    getCategory(id: ID!): Category
-    getProduct(productId: ID!): Product
+  allProductsSortedByPrice: [Product]
+  productsByCategory(categoryId: ID!): [Product]
+  getAllUsers: [User]
+  getUser(id: ID!): User
+  getAllCategories: [Category]
+  getCategory(id: ID!): Category
+  getProduct(productId: ID!): Product
 }
 
 type Mutation {
-    createUser(fullname: String!, email: String!, password: String!, phone: String, categoryIds: [ID!]): User
-    updateUser(id: ID!, fullname: String, email: String, password: String, phone: String, categoryIds: [ID!]): User
-    deleteUser(id: ID!): Boolean
+  createUser(
+    fullname: String!
+    email: String!
+    password: String!
+    phone: String
+    role: Role
+    categoryIds: [ID!]
+  ): User
 
-    createCategory(name: String!, images: String): Category
-    updateCategory(id: ID!, name: String, images: String): Category
-    deleteCategory(id: ID!): Boolean
+  updateUser(
+    id: ID!
+    fullname: String
+    email: String
+    password: String
+    phone: String
+    role: Role
+    categoryIds: [ID!]
+  ): User
 
-    createProduct(title: String!, quantity: Int!, description: String, price: Float!, categoryId: ID!, userId: ID!): Product
-    updateProduct(productId: ID!, title: String, quantity: Int, description: String, price: Float, categoryId: ID, userId: ID): Product
-    deleteProduct(productId: ID!): Boolean
+  deleteUser(id: ID!): Boolean
+
+  createCategory(name: String!, images: String): Category
+  updateCategory(id: ID!, name: String, images: String): Category
+  deleteCategory(id: ID!): Boolean
+
+  createProduct(
+    title: String!
+    quantity: Int!
+    description: String
+    price: Float!
+    categoryId: ID!
+    userId: ID!
+  ): Product
+
+  updateProduct(
+    productId: ID!
+    title: String
+    quantity: Int
+    description: String
+    price: Float
+    categoryId: ID
+    userId: ID
+  ): Product
+
+  deleteProduct(productId: ID!): Boolean
 }

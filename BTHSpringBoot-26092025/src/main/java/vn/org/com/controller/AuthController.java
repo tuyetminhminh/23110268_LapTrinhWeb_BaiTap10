@@ -37,7 +37,7 @@ public class AuthController {
         u.setFullname(fullname);
         u.setEmail(email);
         u.setPassword(password); // sẽ được encode trong service
-        u.setPhoneVN(phone);
+        u.setPhone(phone);
         if (u.getRole() == null) u.setRole(Role.USER);
         userService.save(u);
 

@@ -82,7 +82,7 @@ public class AdminUserController {
 	    dto.setId(u.getId());
 	    dto.setFullname(u.getFullname());
 	    dto.setEmail(u.getEmail());
-	    dto.setPhoneVN(u.getPhoneVN());
+	    dto.setPhone(u.getPhone());
 //	    dto.setPassword(PASSWORD_PLACEHOLDER);
 	    model.addAttribute("user", dto);
 
@@ -140,7 +140,7 @@ public class AdminUserController {
 	        entity = new User();
 	        entity.setFullname(form.getFullname());
 	        entity.setEmail(form.getEmail());
-	        entity.setPhoneVN(form.getPhoneVN());
+	        entity.setPhone(form.getPhone());
 	        entity.setPassword(passwordEncoder.encode(form.getPassword())); // đã đảm bảo không rỗng ở trên
 	    } else {
 	        // UPDATE
@@ -148,7 +148,7 @@ public class AdminUserController {
 	                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
 	        entity.setFullname(form.getFullname());
 	        entity.setEmail(form.getEmail());
-	        entity.setPhoneVN(form.getPhoneVN());
+	        entity.setPhone(form.getPhone());
 
 	        // Nếu người dùng nhập password mới -> mã hoá & cập nhật
 	        String pw = form.getPassword();

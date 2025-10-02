@@ -37,13 +37,14 @@ public class User implements Serializable {
     @Column(nullable = false, columnDefinition = "VARCHAR(10)")
     @Pattern(regexp = "0\\d{9}", message = "Số điện thoại phải bắt đầu bằng '0' và có 10 chữ số")
     @NotBlank(message = "Vui lòng điền số điện thoại")
-    private String phoneVN;
+    private String phone;
     
     //Phân quyền
+
+    public enum Role { ADMIN, USER }
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "VARCHAR(10)")
     private Role role; // ADMIN, USER
-    public enum Role { ADMIN, USER }
 
     // Many-to-many with Category
     @ManyToMany
